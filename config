@@ -6,7 +6,10 @@
 
 #emulator=
 
-savepath='/home/nito/Documents/synctest/test/'
-remote=192.168.1.250
-remotepath='/home/pi/dufs/Roms/test/'
+savepath='/path/to/save/'
+#important to add the / at the end
+
+remote=ip.to.connect
+
+remotepath='/remote/path/to/save/'
 user=pi
