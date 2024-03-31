@@ -1,6 +1,6 @@
 #!/bin/sh
 
-configpath='/home/nito/Documents/synctest'
+configpath='~/.config/nitosync'
 configfile='config'
 
 
