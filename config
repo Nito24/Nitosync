@@ -1,13 +1,31 @@
-#s) savepath=${OPTARG};;
-#r) remote=${OPTARG};;
-#u) user=${OPTARG};;
-#p) remotepath=${OPTARG};;
-#e) emulator=${OPTARG};;
+#NITOSYNC DEFAULT CONFIGURATION FILE
 
-#emulator=
+#Declarate varible values in the standart sh way:
+# --> VARIABLE=VALUE
 
-savepath='/home/nito/Documents/synctest/test/'
-remote=nito.ddns.net
-remotepath='/home/filesync/test/'
-user=filesync
-sshport=8443
+#Posible variables:
+#  remote | remote ip/address to connect to
+#  sshport | default is 22
+#  user | user to use to connect to the server
+#  configpath | default is ~/.config/nitosync, nitosync will be able to read all files located in this directory for configuration
+#  configfile | default is config
+#  savepath | local savepath to sync to/from
+#  remotepath | remote savepath to sync to/from
+#  emulator | app/emulator/script... to execute between syncs
+#  after |
+#  after2 | 
+
+
+
+#Simple sample configuration:
+
+#  ITS VERY IMPORTANT TO SET PATHS CORRECTLY
+#  ALL PATHS (FOLDERS) SHOULD END IN BACKSLASH /
+#  '/my/path/'      This way files go correctly in path/
+#          ^^^      Ex: /my/path/save1, /my/path/save2...
+
+#emulator='/local/my/emulator/path/executable/'
+#remote='my.web.net'
+#user=myuser
+#savepath='/local/my/emulator/path/saves/'
+#remotepath='/remote/path/saves/'
