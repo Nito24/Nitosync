@@ -2,6 +2,10 @@
 This script provides a simple way of syncing files at the time of opening and closing the specified program with the help of RSync.
 This is quite usefull for syncing save files of emulators and such between multiple devices. I made this with the aim of being able to play the same savefiles in my PC and SteamDeck in a seamless way and without this compromising the portable's battery life. Other solutions to this problem were thins such as Syncthing which, in my opinion took too many resources from the SteamDeck as it is allways running in the background. My solution (although not perfect in any way) doesn't compromise as many resources as it only runs when asked. Furthermore, this solution works more in line with how Steams own cloud save syncrhonization works.
 
+Dependencies:
+  - Rsync
+  - Notify-Send
+
 Syncing files using Nitosync:
 
 This little script reads the default config and then, if asked, overides the desired values with an extra config file. The thinking behind this is that values such as the server's IP, user, port... can be kept in the global configuration and other values such as diferent save directories and emulator paths can be changed with their own configs. With this, we can have a config file which only overides the necessary values per system/emulator fom example, a config file for ps2 and another for megadrive.
