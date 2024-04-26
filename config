@@ -1,0 +1,13 @@
+#s) savepath=${OPTARG};;
+#r) remote=${OPTARG};;
+#u) user=${OPTARG};;
+#p) remotepath=${OPTARG};;
+#e) emulator=${OPTARG};;
+
+#emulator=
+
+savepath='/home/nito/Documents/synctest/test/'
+remote=nito.ddns.net
+remotepath='/home/filesync/test/'
+user=filesync
+sshport=8443
