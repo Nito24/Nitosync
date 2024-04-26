@@ -11,7 +11,7 @@ Syncing files using Nitosync:
 This little script reads the default config and then, if asked, overides the desired values with an extra config file. The thinking behind this is that values such as the server's IP, user, port... can be kept in the global configuration and other values such as diferent save directories and emulator paths can be changed with their own configs. With this, we can have a config file which only overides the necessary values per system/emulator fom example, a config file for ps2 and another for megadrive.
 A sample config file can be found in this repo.
 
-Nitosync installation is purely manual, you can decide where to save the script (/usr/bin or similar is recommended). Config files can also be saved where one desires (although I would chose a normal location such as ~/,config/nitosync which is actually the default location stated in the scipt).
+Nitosync installation is purely manual, you can decide where to save the script (/usr/bin or similar is recommended). Config files can also be saved where one desires (although I would chose a normal location such as ~/.config/nitosync which is actually the default location stated in the scipt).
 
 For use with the SteamDeck as it has an inmmutable OS rather than unlocking it I chose to store the whole scipt and config files in ~/.config/nitosync. The only drwback is that nitosync will not be recogniced as a command and you have to add the folder to the $PATH or just use the full path when calling it.
 
