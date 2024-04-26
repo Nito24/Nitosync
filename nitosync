@@ -144,7 +144,3 @@ fi
 echo 'Ended end sync process'
 echo
 
-
-
-#SWITCH EXAMPLE
-#./script -e 'systemd-inhibit /home/nito/Documents/emulators/yuzu-mainline-20240304-537296095.AppImage' -s /home/nito/.local/share/yuzu/nand/user/save/0000000000000000/D2354B5EEA909F6A6F86E5D7EF1D0A6F/ -r '192.168.1.250' -p '/home/pi/ROMSYNC/switch/' -u pi
