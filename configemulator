@@ -1,0 +1,5 @@
+#This is a sample of how an emulator config would be
+
+#emulator='/local/my/emulator/path/executable/'
+#savepath='/local/my/emulator/path/saves/'
+#remotepath='/remote/path/saves/'
