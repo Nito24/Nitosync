@@ -71,6 +71,7 @@ Help(){
     echo "options:"
     echo "  -e           App to (e)xecute between syncs."
     echo "  -a           Extra commands to pass (a)fter execute app."
+    echo "  -b           Extra commands 2 to pass (a)fter execute app."
     echo "  -s           Local (s)avepath to sync to/from."
     echo "  -r           (R)emote ip/address."
     echo "  -t           Port (t)o direct ssh connection."
