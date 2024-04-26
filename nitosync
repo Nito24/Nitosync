@@ -84,11 +84,6 @@ Help(){
     exit
 }
 
-#while getopts :h option; do
-#   case $option in
-#      h) Help;;
-#   esac
-#done
 
 while getopts s:r:t:u:p:e:a:b:c::hf flag
 do
@@ -108,10 +103,6 @@ do
     esac
 done
 
-
-#IF SAVEPATH, REMOTE, USER AND REMOTEPATH ARENT DECLARED (NORMALLY OR WITH CONFIG FILE) EXIT!!!!
-
-#…
 
 
 #START SCRIPT SYNC (bidirectional)
