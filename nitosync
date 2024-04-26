@@ -1,5 +1,9 @@
 #!/bin/sh
 
+
+#NITOSYNC
+#Nito 2024
+
 sshport=22
 configpath=$HOME'/.config/nitosync'
 configfile='config'
