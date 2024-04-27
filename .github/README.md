@@ -6,6 +6,8 @@ Dependencies:
   - Rsync
   - Notify-Send
 
+This script uses Rsync to syncrhonice files over ssh so setting up keys is essensial. Doing this ensured that ssh passwords will not be stored as plain text. It also provides us with enough security to port forward the server's ssh port so that files can be synced from the internet and not only LAN (if you plan on doing this you will probably need to setup a dynamic DNS too to avoid changing the IP manually every time it changes).
+
 Syncing files using Nitosync:
 
 This little script reads the default config and then, if asked, overides the desired values with an extra config file. The thinking behind this is that values such as the server's IP, user, port... can be kept in the global configuration and other values such as diferent save directories and emulator paths can be changed with their own configs. With this, we can have a config file which only overides the necessary values per system/emulator fom example, a config file for ps2 and another for megadrive.
