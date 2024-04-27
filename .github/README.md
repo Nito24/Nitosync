@@ -19,4 +19,4 @@ For use with the SteamDeck as it has an inmmutable OS rather than unlocking it I
 
 At the end of the day, you would tweak the config files to your necessities and then would change your emulators shortcuts so that they point to Nitosync with -c to the desired config and it would automatically just sync everithing for you. On a SteamDeck you would edit the shortcuts of each game so that instead of pointing to the emulator and the game they would point to Nitosync and the game (specifiying the -c).
 
-Nitosync also counts with automatick backups and an option to do a full sync (really usefull for first runs if you already have saves).
+Nitosync also counts with automatic backups and an option to do a full sync (really usefull for first runs if you already have saves).
