@@ -25,14 +25,14 @@ bisync(){
     echo 'Connection established succesffully with remote ('$remote')'
     #notify-send Syncronization 'Succesffully connected with remote server' --app-name=' NitoSync'
     #down up
-    rsync -azbu --backup-dir=backups/ --exclude=backups $user@$remote:$remotepath $savepath -e 'ssh -p '$sshport' -o ConnectTimeout=1' && ( rsync -azbu --backup-dir=backups/ --exclude=backups $savepath $user@$remote:$remotepath -e 'ssh -p '$sshport' -o ConnectTimeout=1' && echo 'Succesfully synced files (bidirectionally) ('$remote' -c '$configfile')' && notify-send Syncronization 'Succesfully synced files bidirectionally ('$remote' -c '$configfile')' --app-name=' NitoSync' )
+    rsync -azbu --backup-dir=backups/ --exclude=backups $user@$remote:"$remotepath" "$savepath" -e 'ssh -p '$sshport' -o ConnectTimeout=1' && ( rsync -azbu --backup-dir=backups/ --exclude=backups "$savepath" $user@$remote:"$remotepath" -e 'ssh -p '$sshport' -o ConnectTimeout=1' && echo 'Succesfully synced files (bidirectionally) ('$remote' -c '$configfile')' && notify-send Syncronization 'Succesfully synced files bidirectionally ('$remote' -c '$configfile')' --app-name=' NitoSync' )
 }
 
 uploadsync(){
     echo 'Connection established succesfully with remote ('$remote')'
     #notify-send Syncronization 'Succesffully connected with remote server' --app-name=' NitoSync'
     #up
-    rsync -azbu --backup-dir=backups/ --exclude=backups $savepath $user@$remote:$remotepath -e 'ssh -p '$sshport' -o ConnectTimeout=1' &&  echo 'Succesfully uploaded files to remote server ('$remote' -c '$configfile')' && notify-send Syncronization 'Succesfully uploaded/synced files ('$remote' -c '$configfile')' --app-name=' NitoSync'
+    rsync -azbu --backup-dir=backups/ --exclude=backups "$savepath" $user@$remote:"$remotepath" -e 'ssh -p '$sshport' -o ConnectTimeout=1' &&  echo 'Succesfully uploaded files to remote server ('$remote' -c '$configfile')' && notify-send Syncronization 'Succesfully uploaded/synced files ('$remote' -c '$configfile')' --app-name=' NitoSync'
 }
 
 noserver(){
