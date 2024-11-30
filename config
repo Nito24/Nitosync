@@ -29,3 +29,6 @@
 #user=myuser
 #savepath='/local/my/emulator/path/saves/'
 #remotepath='/remote/path/saves/'
+#showprogress=true
+#timeout=2
+#warntimeout=5

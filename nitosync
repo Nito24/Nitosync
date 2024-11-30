@@ -3,8 +3,17 @@
 
 #NITOSYNC
 #Nito 2024
+appname='NitoSync'
+
+# Timeouts
+timeout=2
+warntimeout=5
+
+# Show download/upload progress
+showprogress=false
 
 sshport=22
+
 configpath=$HOME'/.config/nitosync'
 configfile='config'
 
@@ -25,28 +34,52 @@ bisync(){
     echo 'Connection established succesffully with remote ('$remote')'
     #notify-send Syncronization 'Succesffully connected with remote server' --app-name=' NitoSync'
     #down up
-    rsync -azbu --backup-dir=backups/ --exclude=backups $user@$remote:"$remotepath" "$savepath" -e 'ssh -p '$sshport' -o ConnectTimeout=1' && ( rsync -azbu --backup-dir=backups/ --exclude=backups "$savepath" $user@$remote:"$remotepath" -e 'ssh -p '$sshport' -o ConnectTimeout=1' && echo 'Succesfully synced files (bidirectionally) ('$remote' -c '$configfile')' && notify-send Syncronization 'Succesfully synced files bidirectionally ('$remote' -c '$configfile')' --app-name=' NitoSync' )
+    if [ $showprogress == false ] ; then
+        rsync -azbu --backup-dir=backups/ --exclude=backups $user@$remote:"$remotepath" "$savepath" -e 'ssh -p '$sshport' -o ConnectTimeout=1'\
+        && ( rsync -azbu --backup-dir=backups/ --exclude=backups "$savepath" $user@$remote:"$remotepath" -e 'ssh -p '$sshport' -o ConnectTimeout=1'\
+        && echo '[INFO]'"[$(date +"%R")]"' Succesfully synced files (bidirectionally) ('$remote' -c '$configfile')'\
+        && notify-send Syncronization 'Succesfully synced files bidirectionally ('$remote' -c '$configfile')' --app-name=$appname )
+    else
+        rsync -azbu --progress --backup-dir=backups/ --exclude=backups $user@$remote:$remotepath $savepath -e 'ssh -p '$sshport' -o ConnectTimeout=1'\
+        | awk -f rsync.awk | zenity --progress --title="Syncing" --text="Downloading files..." --percentage=0 --auto-close --no-cancel\
+        && ( rsync -azbu --progress --backup-dir=backups/ --exclude=backups $savepath $user@$remote:$remotepath -e 'ssh -p '$sshport' -o ConnectTimeout=1'\
+        | awk -f rsync.awk\
+        | zenity --progress --title="Syncing" --text="Uploading files..." --percentage=0 --auto-close --no-cancel\
+        && echo 'Succesfully synced files (bidirectionally) ('$remote' -c '$configfile')'\
+        && zenity --info --timeout=$timeout --title $appname --text 'Succesfully synced files bidirectionally ('$remote' -c '$configfile')' --width=280 || return 0)
+    fi
 }
 
 uploadsync(){
     echo 'Connection established succesfully with remote ('$remote')'
     #notify-send Syncronization 'Succesffully connected with remote server' --app-name=' NitoSync'
     #up
-    rsync -azbu --backup-dir=backups/ --exclude=backups "$savepath" $user@$remote:"$remotepath" -e 'ssh -p '$sshport' -o ConnectTimeout=1' &&  echo 'Succesfully uploaded files to remote server ('$remote' -c '$configfile')' && notify-send Syncronization 'Succesfully uploaded/synced files ('$remote' -c '$configfile')' --app-name=' NitoSync'
+    if [ $showprogress == false ] ; then
+    rsync -azbu --backup-dir=backups/ --exclude=backups "$savepath" $user@$remote:"$remotepath" -e 'ssh -p '$sshport' -o ConnectTimeout=1'\
+    &&  echo '[INFO]'"[$(date +"%R")]"' Succesfully uploaded files to remote server ('$remote' -c '$configfile')'\
+    && notify-send Syncronization 'Succesfully uploaded/synced files ('$remote' -c '$configfile')' --app-name=$appname
+    else
+        rsync -azbu --progress --backup-dir=backups/ --exclude=backups $savepath $user@$remote:$remotepath -e 'ssh -p '$sshport' -o ConnectTimeout=1'\
+        | awk -f rsync.awk\
+        | zenity --progress --title="Syncing" --text="Uploading files..." --percentage=0 --auto-close --no-cancel\
+        &&  echo 'Succesfully uploaded files to remote server ('$remote' -c '$configfile')'\
+        && zenity --info --timeout=$timeout --title $appname --text 'Succesfully uploaded/synced files ('$remote' -c '$configfile')' --width=280\
+        || return 0
+    fi
 }
 
 noserver(){
-    echo 'Error: Cant reach remote server ('$remote')'
-    notify-send Syncronization 'Couldnt reach remote server' --app-name=' NitoSync' -u critical
+    echo '[INFO]'"[$(date +"%R")]"' Error: Cant reach remote server ('$remote')'
+    notify-send Syncronization 'Couldnt reach remote server' --app-name=$appname -u critical
 }
 
 badport(){
-    echo 'Error: Remote server connection ('$remote') was succesfull but port ('$sshport') didnt work.'
+    echo '[INFO]'"[$(date +"%R")]"' Error: Remote server connection ('$remote') was succesfull but port ('$sshport') didnt work.'
     notify-send Syncronization 'Couldnt reach remote server (badport: '$sshport')' --app-name=' NitoSync' -u critical
 }
 
 fullsync(){
-    echo "Performing full syncronization (using all directories listed in all config files)"
+    echo '[INFO]'"[$(date +"%R")]"' Performing full syncronization (using all directories listed in all config files)'
     if ping -c 1 $remote &> /dev/null
     then
         for entry in "$configpath"/*
@@ -56,7 +89,7 @@ fullsync(){
             . $entry
             bisync || badport
         done
-        echo 'Ended full sync process'
+        echo '[INFO]'"[$(date +"%R")]"' Ended full sync process'
     else
         noserver
     fi
@@ -97,7 +130,7 @@ do
         t) sshport=${OPTARG};;
         u) user=${OPTARG};;
         p) remotepath=${OPTARG};;
-        e) emulator=${OPTARG};;
+        e) executable=${OPTARG};;
         a) after=${OPTARG};;
         b) after2=${OPTARG};;
         f) fullsync;;
@@ -110,7 +143,7 @@ done
 
 
 #START SCRIPT SYNC (bidirectional)
-echo 'Starting intitial sync (bidirectional)'
+echo '[INFO]'"[$(date +"%R")]"' Starting intitial sync (bidirectional)'
 #notify-send Syncronization 'NitoSync is running now' --app-name=' NitoSync'
 if ping -c 1 $remote &> /dev/null
 then
@@ -118,25 +151,25 @@ then
 else
     noserver
 fi
-echo 'Ended start sync process'
+echo '[INFO]'"[$(date +"%R")]"' Ended start sync process'
 echo
 
 
-echo $emulator $after
-$emulator $after "$after2" &> /dev/null
+echo $executable $after
+$executable $after "$after2" &> /dev/null
 
 
 
 
 #END SCRIPT SYNC (only upload)
 echo
-echo 'Starting final sync'
+echo '[INFO]'"[$(date +"%R")]"' Starting final sync'
 if ping -c 1 $remote &> /dev/null
 then
     uploadsync || badport
 else
     noserver
 fi
-echo 'Ended end sync process'
+echo '[INFO]'"[$(date +"%R")]"' Ended end sync process'
 echo
 
