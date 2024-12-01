@@ -22,7 +22,7 @@ configuration(){
     if test -f ${configpath}/${configfile} ; then
         . ${configpath}/${configfile}
     else
-        echo 'No config file found! (~/.config/nitosync/)'
+        echo 'No config file found (~/.config/nitosync/)'
         exit 1
     fi
 }
