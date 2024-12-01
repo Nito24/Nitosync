@@ -21,9 +21,10 @@ configfile='config'
 configuration(){
     if test -f ${configpath}/${configfile} ; then
         . ${configpath}/${configfile}
+        configuration_loaded=true
     else
         echo 'No config file found (~/.config/nitosync/)'
-        exit 1
+        configuration_loaded=false
     fi
 }
 
@@ -76,19 +77,23 @@ noserver(){
 
 badport(){
     echo '[INFO]'"[$(date +"%R")]"' Error: Remote server connection ('$remote') was succesfull but port ('$sshport') didnt work.'
-    notify-send Syncronization 'Couldnt reach remote server (badport: '$sshport')' --app-name=' NitoSync' -u critical
+    notify-send Syncronization 'Couldnt reach remote server (badport: '$sshport')' --app-name=$appname -u critical
 }
 
 fullsync(){
     echo '[INFO]'"[$(date +"%R")]"' Performing full syncronization (using all directories listed in all config files)'
     if ping -c 1 $remote &> /dev/null
     then
-        for entry in "$configpath"/*
+        for entry in "$configpath"/*.cfg
         do
-            echo "$entry"
-            configfile=$(grep -o '[^/]*$' <<< $entry)
-            . $entry
-            bisync || badport
+            if [ $entry == "$configpath"/*.cfg ] ; then
+                true
+            else
+                echo "$entry"
+                configfile=$(grep -o '[^/]*$' <<< $entry)
+                . $entry
+                bisync || badport
+            fi
         done
         echo '[INFO]'"[$(date +"%R")]"' Ended full sync process'
     else
@@ -119,7 +124,7 @@ Help(){
     echo "  -c           Specific (c)onfig file to use (name; must be located in ~/.config/nitosync/)."
     echo "  -h           Print this (h)elp dialog."
     echo
-    exit
+    exit 1
 }
 
 
@@ -143,9 +148,15 @@ done
 
 
 
+if [ $configuration_loaded == false ] ; then
+    echo "Couldn't found any configuration"
+    exit 1
+fi
+
+
+
 #START SCRIPT SYNC (bidirectional)
 echo '[INFO]'"[$(date +"%R")]"' Starting intitial sync (bidirectional)'
-#notify-send Syncronization 'NitoSync is running now' --app-name=' NitoSync'
 if ping -c 1 $remote &> /dev/null
 then
     bisync || badport
@@ -154,6 +165,7 @@ else
 fi
 echo '[INFO]'"[$(date +"%R")]"' Ended start sync process'
 echo
+
 
 
 echo $executable $after
