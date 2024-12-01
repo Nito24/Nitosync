@@ -23,6 +23,7 @@ configuration(){
         . ${configpath}/${configfile}
     else
         echo 'No config file found'
+        exit 1
     fi
 }
 
