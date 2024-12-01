@@ -5,6 +5,8 @@ This is quite usefull for syncing save files of emulators and such between multi
 Dependencies:
   - Rsync
   - Notify-Send
+  - zenity
+  - awk
 
 This script uses Rsync to syncrhonice files over ssh so setting up keys is essensial. Doing this ensured that ssh passwords will not be stored as plain text. It also provides us with enough security to port forward the server's ssh port so that files can be synced from the internet and not only LAN (if you plan on doing this you will probably need to setup a dynamic DNS too to avoid changing the IP manually every time it changes).
 
