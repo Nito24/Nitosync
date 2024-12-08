@@ -1,0 +1,55 @@
+#!/bin/bash
+
+#/etc/bash_completion.d/
+
+function __nitosync_completion() {
+  local cur prev
+
+  cur=${COMP_WORDS[COMP_CWORD]}
+  prev=${COMP_WORDS[COMP_CWORD-1]}
+
+  # Get all the config files
+  cd ~/.config/nitosync/
+  declare -a configs
+  for file in *
+  do
+    if [[ $file == *".cgf"* ]]
+    then
+        true
+    else
+        if [[ -d $file ]]
+        then
+            true
+        else
+            configs=("${configs[@]}" "$file")
+        fi
+    fi
+  done
+
+  #echo "${configs[@]}"
+
+  case ${COMP_CWORD} in
+    1)
+      # Base-level provides no completion
+      COMPREPLY=()
+      ;;
+    2)
+      # Inner completion
+      case ${prev} in
+        -c)
+          # config option completion
+          #COMPREPLY=("$(date "+%a %b %e %T %Z %Y")")
+          #COMPREPLY+=("$(date -d 'today 0' "+%a %b %e %T %Z %Y")")
+          #COMPREPLY+=("$(date -d 'yesterday 0' "+%a %b %e %T %Z %Y")")
+          for config in $configs
+          do
+            COMPREPLY+=("$config")
+          ;;
+      esac
+      ;;
+    *)
+      # All other cases: provide no completion
+      COMPREPLY=()
+      ;;
+  esac
+}
