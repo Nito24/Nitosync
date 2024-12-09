@@ -43,9 +43,9 @@ bisync(){
         && notify-send Syncronization 'Succesfully synced files bidirectionally ('$remote' -c '$configfile')' --app-name=$appname )
     else
         rsync -azbu --progress --backup-dir=backups/ --exclude=backups $user@$remote:$remotepath $savepath -e 'ssh -p '$sshport' -o ConnectTimeout=1'\
-        | awk -f rsync.awk | zenity --progress --title="Syncing" --text="Downloading files..." --percentage=0 --auto-close --no-cancel\
+        | awk -f /etc/nitosync/rsync.awk | zenity --progress --title="Syncing" --text="Downloading files..." --percentage=0 --auto-close --no-cancel\
         && ( rsync -azbu --progress --backup-dir=backups/ --exclude=backups $savepath $user@$remote:$remotepath -e 'ssh -p '$sshport' -o ConnectTimeout=1'\
-        | awk -f rsync.awk\
+        | awk -f /etc/nitosync/rsync.awk\
         | zenity --progress --title="Syncing" --text="Uploading files..." --percentage=0 --auto-close --no-cancel\
         && echo 'Succesfully synced files (bidirectionally) ('$remote' -c '$configfile')'\
         && zenity --info --timeout=$timeout --title $appname --text 'Succesfully synced files bidirectionally ('$remote' -c '$configfile')' --width=280 || return 0)
@@ -62,7 +62,7 @@ uploadsync(){
     && notify-send Syncronization 'Succesfully uploaded/synced files ('$remote' -c '$configfile')' --app-name=$appname
     else
         rsync -azbu --progress --backup-dir=backups/ --exclude=backups $savepath $user@$remote:$remotepath -e 'ssh -p '$sshport' -o ConnectTimeout=1'\
-        | awk -f rsync.awk\
+        | awk -f /etc/nitosync/rsync.awk\
         | zenity --progress --title="Syncing" --text="Uploading files..." --percentage=0 --auto-close --no-cancel\
         &&  echo 'Succesfully uploaded files to remote server ('$remote' -c '$configfile')'\
         && zenity --info --timeout=$timeout --title $appname --text 'Succesfully uploaded/synced files ('$remote' -c '$configfile')' --width=280\
