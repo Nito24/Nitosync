@@ -17,6 +17,12 @@ sshport=22
 configpath=$HOME'/.config/nitosync'
 configfile='config'
 
+# Zenity Notification dimensions
+ZnWidth=280
+
+#Close app when no sync available
+skip=false
+
 
 configuration(){
     if test -f ${configpath}/${configfile} ; then
@@ -29,6 +35,15 @@ configuration(){
 }
 
 configuration
+
+listconfigs(){
+    for file in $configpath/*
+    do
+        if [[ $file == *".cgf" ]] ; then
+            echo $file
+        fi
+    done
+}
 
 
 
@@ -48,7 +63,7 @@ bisync(){
         | awk -f /etc/nitosync/rsync.awk\
         | zenity --progress --title="Syncing" --text="Uploading files..." --percentage=0 --auto-close --no-cancel\
         && echo 'Succesfully synced files (bidirectionally) ('$remote' -c '$configfile')'\
-        && zenity --info --timeout=$timeout --title $appname --text 'Succesfully synced files bidirectionally ('$remote' -c '$configfile')' --width=280 || return 0)
+        && zenity --info --timeout=$timeout --title $appname --text 'Succesfully synced files bidirectionally ('$remote' -c '$configfile')' --width=ZnWidth || return 0)
     fi
 }
 
@@ -65,14 +80,20 @@ uploadsync(){
         | awk -f /etc/nitosync/rsync.awk\
         | zenity --progress --title="Syncing" --text="Uploading files..." --percentage=0 --auto-close --no-cancel\
         &&  echo 'Succesfully uploaded files to remote server ('$remote' -c '$configfile')'\
-        && zenity --info --timeout=$timeout --title $appname --text 'Succesfully uploaded/synced files ('$remote' -c '$configfile')' --width=280\
+        && zenity --info --timeout=$timeout --title $appname --text 'Succesfully uploaded/synced files ('$remote' -c '$configfile')' --width=ZnWidth\
         || return 0
     fi
 }
 
 noserver(){
     echo '[INFO]'"[$(date +"%R")]"' Error: Cant reach remote server ('$remote')'
-    notify-send Syncronization 'Couldnt reach remote server' --app-name=$appname -u critical
+    ret_val=$(notify-send Syncronization 'Couldnt reach remote server (there is no internet connection, server is unavailable or ssh keys or identities are not correctly setup)' --app-name=$appname --action="stop=Stop" --action="ignore=Ignore" -t 12000)
+    #Ask to run or not
+    if [[ ! $ret_val ]] || [ $ret_val == "ignore" ] ; then
+        skip=false
+    else
+        skip=true
+    fi
 }
 
 badport(){
@@ -82,7 +103,7 @@ badport(){
 
 fullsync(){
     echo '[INFO]'"[$(date +"%R")]"' Performing full syncronization (using all directories listed in all config files)'
-    if ping -c 1 $remote &> /dev/null
+    if timeout 5 bash -c '</dev/tcp/'$remote'/443' &> /dev/null
     then
         for entry in "$configpath"/*.cfg
         do
@@ -122,6 +143,7 @@ Help(){
     echo "  -p           Remote (p)ath to sync to/from."
     echo "  -f           Execute a (f)ull sync, will sync all the directories in the config files."
     echo "  -c           Specific (c)onfig file to use (name; must be located in ~/.config/nitosync/)."
+    echo "  -l           (L)ist config files under ~/.config/nitosync/."
     echo "  -h           Print this (h)elp dialog."
     echo
     exit 1
@@ -142,6 +164,7 @@ do
         f) fullsync;;
         c) configfile=${OPTARG}
            configuration;;
+        l) listconfigs;;
         h) Help;;
     esac
 done
@@ -157,7 +180,7 @@ fi
 
 #START SCRIPT SYNC (bidirectional)
 echo '[INFO]'"[$(date +"%R")]"' Starting intitial sync (bidirectional)'
-if ping -c 1 $remote &> /dev/null
+if ssh -l $user -o BatchMode=yes $remote true &>/dev/null
 then
     bisync || badport
 else
@@ -166,23 +189,27 @@ fi
 echo '[INFO]'"[$(date +"%R")]"' Ended start sync process'
 echo
 
-
-
-echo $executable $after
-$executable $after "$after2" &> /dev/null
-
-
-
-
-#END SCRIPT SYNC (only upload)
-echo
-echo '[INFO]'"[$(date +"%R")]"' Starting final sync'
-if ping -c 1 $remote &> /dev/null
-then
-    uploadsync || badport
+#If server wasnt found check if user indicated to stop app
+if [ $skip == true ] ; then
+    notify-send Syncronization "Closing app as per user request (Couldn't sync)" --app-name=$appname
+    echo '[INFO]'"[$(date +"%R")] Stopping [$appname] by user request (Couldn't sync)"
 else
-    noserver
+    echo $executable $after
+    $executable $after "$after2" &> /dev/null
+
+
+
+
+    #END SCRIPT SYNC (only upload)
+    echo
+    echo '[INFO]'"[$(date +"%R")]"' Starting final sync'
+    if ssh -l $user -o BatchMode=yes $remote true &>/dev/null
+    then
+        uploadsync || badport
+    else
+        noserver
+    fi
+    echo '[INFO]'"[$(date +"%R")]"' Ended end sync process'
+    echo
 fi
-echo '[INFO]'"[$(date +"%R")]"' Ended end sync process'
-echo
 

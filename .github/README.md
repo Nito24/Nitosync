@@ -3,9 +3,11 @@ This script provides a simple way of syncing files at the time of opening and cl
 This is quite usefull for syncing save files of emulators and such between multiple devices. I made this with the aim of being able to play the same savefiles in my PC and SteamDeck in a seamless way and without this compromising the portable's battery life. Other solutions to this problem were thins such as Syncthing which, in my opinion took too many resources from the SteamDeck as it is allways running in the background. My solution (although not perfect in any way) doesn't compromise as many resources as it only runs when asked. Furthermore, this solution works more in line with how Steams own cloud save syncrhonization works.
 
 Dependencies:
+  - Bash
+  - Timeout (coreutils)
   - Rsync
   - Notify-Send
-  - zenity
+  - Zenity
   - awk
 
 This script uses Rsync to syncrhonice files over ssh so setting up keys is essensial. Doing this ensured that ssh passwords will not be stored as plain text. It also provides us with enough security to port forward the server's ssh port so that files can be synced from the internet and not only LAN (if you plan on doing this you will probably need to setup a dynamic DNS too to avoid changing the IP manually every time it changes).
